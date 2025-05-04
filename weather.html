@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather</title>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Oxygen', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f8fa;
+      height: 200vh;
+    }
+
+    .headContainer {
+      padding: 40px;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .titleContainer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .checkBox {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .checkBox label {
+      cursor: pointer;
+    }
+
+    .checkBox input[type="checkbox"]:checked + label {
+      color: green;
+      transform: scale(1.1);
+    }
+
+    .inputContainer, .dropDownContainer {
+      display: none;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .inputContainer input, .dropDownContainer select {
+      padding: 8px;
+      width: 220px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .btnContainer {
+      display: none;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btnContainer input {
+      padding: 10px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+    }
+
+    .btnContainer input:hover {
+      background-color: #0056b3;
+    }
+
+    .weatherReport {
+      margin-top: 30px;
+    }
+
+    .weatherCard {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+      background: #fdfdfd;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .weatherCard img {
+      width: 80px;
+      height: 80px;
+    }
+
+    .lottieContainer {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="headContainer">
+    <div class="titleContainer">
+      <h1>Weather Forecast</h1>
+    </div>
+
+    <div class="checkBox">
+      <div class="check1Con">
+        <input type="checkbox" id="check1" />
+        <label for="check1">Through coordinate</label>
+      </div>
+      <div class="check2Con">
+        <input type="checkbox" id="check2" />
+        <label for="check2">Through Names</label>
+      </div>
+    </div>
+
+    <div class="inputContainer">
+      <input type="number" id="longitude" placeholder="Longitude" />
+      <input type="number" id="latitude" placeholder="Latitude" />
+    </div>
+
+    <div class="dropDownContainer">
+      <select id="Citylist">
+        <option value="">Select Place</option>
+        <option value="Gyalshing">Gyalshing</option>
+        <option value="Namchi">Namchi</option>
+        <option value="Gangtok">Gangtok</option>
+        <option value="Soreng">Soreng</option>
+        <option value="Mangan">Mangan</option>
+        <option value="Rinchenpong">Rinchenpong</option>
+        <option value="Singtam">Singtam</option>
+      </select>
+    </div>
+
+    <div class="btnContainer">
+      <input type="button" value="Get Weather" onclick="getWeather()" />
+    </div>
+
+    <div class="weatherReport"></div>
+
+    <div class="lottieContainer">
+      <lottie-player id="weatherAnimation" src="https://assets10.lottiefiles.com/packages/lf20_tmsiddoc.json" background="transparent" speed="1" loop autoplay></lottie-player>
+    </div>
+  </div>
+
+  <script>
+    const checbox1 = document.getElementById("check1");
+    const checbox2 = document.getElementById("check2");
+    const inputContainer = document.querySelector(".inputContainer");
+    const btnContainer = document.querySelector(".btnContainer");
+    const dropDownContainer = document.querySelector(".dropDownContainer");
+    const check1Con = document.querySelector(".check1Con");
+    const check2Con = document.querySelector(".check2Con");
+    const weatherReportDiv = document.querySelector(".weatherReport");
+    const citySelect = document.getElementById("Citylist");
+
+    const cityCoordinates = {
+      Gyalshing: { lat: 27.2939, lon: 88.2581 },
+      Namchi: { lat: 27.165, lon: 88.3654 },
+      Gangtok: { lat: 27.3314, lon: 88.6138 },
+      Soreng: { lat: 27.2877, lon: 88.2396 },
+      Mangan: { lat: 27.5144, lon: 88.5948 },
+      Rinchenpong: { lat: 27.2979, lon: 88.2297 },
+      Singtam: { lat: 27.2348, lon: 88.5036 }
+    };
+
+    const gifMap = {
+      clear: "https://media.giphy.com/media/xT0xezQGU5xCDJuCPe/giphy.gif",  // Sunny
+      cloud: "https://media.giphy.com/media/QxkfZgmPQtWTS/giphy.gif",      // Cloudy
+      rain: "https://media.giphy.com/media/3o6ZsYM3XQpISJMeli/giphy.gif"   // Rain
+    };
+
+    const lottieMap = {
+      clear: "https://assets10.lottiefiles.com/packages/lf20_tmsiddoc.json",
+      cloud: "https://assets2.lottiefiles.com/packages/lf20_jmBauI.json",
+      rain: "https://assets10.lottiefiles.com/packages/lf20_jm4t0w3m.json"
+    };
+
+    function updateVisibility() {
+      clearWeatherData();
+      if (checbox1.checked) {
+        inputContainer.style.display = "flex";
+        btnContainer.style.display = "flex";
+        dropDownContainer.style.display = "none";
+        check2Con.style.display = "none";
+      } else if (checbox2.checked) {
+        inputContainer.style.display = "none";
+        btnContainer.style.display = "flex";
+        dropDownContainer.style.display = "flex";
+        check1Con.style.display = "none";
+      } else {
+        inputContainer.style.display = "none";
+        dropDownContainer.style.display = "none";
+        btnContainer.style.display = "none";
+        check1Con.style.display = "flex";
+        check2Con.style.display = "flex";
+      }
+    }
+
+    checbox1.addEventListener("change", updateVisibility);
+    checbox2.addEventListener("change", updateVisibility);
+
+    function clearWeatherData() {
+      weatherReportDiv.innerHTML = "";
+    }
+
+    function updateLottie(condition) {
+      const animation = document.getElementById("weatherAnimation");
+      animation.setAttribute("src", lottieMap[condition] || lottieMap.clear);
+    }
+
+    function getWeather() {
+      let lat, lon;
+
+      if (checbox1.checked) {
+        lat = parseFloat(document.getElementById("latitude").value);
+        lon = parseFloat(document.getElementById("longitude").value);
+      } else if (checbox2.checked) {
+        const city = citySelect.value;
+        if (!cityCoordinates[city]) {
+          alert("Please select a valid city.");
+          return;
+        }
+        lat = cityCoordinates[city].lat;
+        lon = cityCoordinates[city].lon;
+      }
+
+      if (!lat || !lon) {
+        alert("Please provide valid coordinates.");
+        return;
+      }
+
+      const api = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+
+      fetch(api)
+        .then(res => res.json())
+        .then(data => {
+          const daily = data.daily;
+          let html = '';
+
+          for (let i = 0; i < daily.time.length; i++) {
+            const date = new Date(daily.time[i]).toLocaleDateString();
+            const max = daily.temperature_2m_max[i];
+            const min = daily.temperature_2m_min[i];
+            const precip = daily.precipitation_sum[i];
+
+            let condition = "clear";
+            if (precip > 10) condition = "rain";
+            else if (precip > 0) condition = "cloud";
+
+            if (i === 0) updateLottie(condition);
+
+            html += `
+              <div class="weatherCard">
+                <img src="${gifMap[condition]}" alt="${condition}" />
+                <div>
+                  <h3>${date}</h3>
+                  <p><strong>Max Temp:</strong> ${max} °C</p>
+                  <p><strong>Min Temp:</strong> ${min} °C</p>
+                  <p><strong>Precipitation:</strong> ${precip} mm</p>
+                </div>
+              </div>
+            `;
+          }
+
+          weatherReportDiv.innerHTML = html;
+        })
+        .catch(err => {
+          alert("Error fetching weather data: " + err.message);
+        });
+    }
+  </script>
+</body>
+</html>

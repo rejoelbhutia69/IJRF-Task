@@ -1,0 +1,171 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: #f8f9fa;
+    font-family: "Shadows Into Light", 'Times New Roman', Times, serif ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+.headContainer {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    margin: 0em 5em 5em 5em;
+    max-width: 500px;
+    text-align: center;
+    background-color: #e9ecef;
+    box-shadow: 0px 0px 2px black;
+    
+}
+
+.addBtn {
+    margin: 0px 0px 0px 8px;
+    width: 70px;
+    height: 30px;
+    background-color: #d4e09b;
+    border-radius: 10px;
+    font-family: "Shadows Into Light", 'Times New Roman', Times, serif ;
+}
+.textBox{
+    height: 30px;
+    border-radius: 5px;
+    padding: 7px;
+    margin-bottom: 20px;
+    font-family: "Shadows Into Light", 'Times New Roman', Times, serif ;
+}
+.addBtn, .textBox{
+    margin: 10px 20px 20px 20px;
+}
+.btn{
+    padding: 5px;
+    border-radius: 10px;
+    margin-left: 10px;
+    background-color: ;
+}
+checkbox{
+    height: 5px;
+}
+
+.listData{
+    height: 40px;
+    width: 70%;
+    margin: 6px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 2px black;
+}
+input:hover{
+    box-shadow: 0px 0px 6px blue;
+    transform: translateY(-3px);
+}
+button:hover{
+    box-shadow: 0px 0px 6px blue;
+}
+.listData :hover{
+    box-shadow: 0px 0px 6px blue;
+}
+        </style>
+    </head>
+    <body>
+        
+        <div class="headContainer">
+        <div class="title"><h1>To-Do List</h1></div>
+        <div class="formContainer">
+    <input type="text" class="textBox" placeholder="Enter the list">
+        <button onclick="add()" class = "addBtn">Add Task</button>
+        </div>
+        </div>
+    </body>
+    
+    <Script>
+        function add(){
+
+let headContainer = document.querySelector(".headContainer")
+let inputBox = document.querySelector("input.textBox");
+let input = inputBox.value;
+inputBox.value = "";
+
+let div = document.createElement("div");
+div.className = "listData"
+div.style.display = "flex";
+div.style.justifyContent = "center";
+div.style.alignItems = "center";
+
+let checkbox = document.createElement(`input`);
+checkbox.type = "checkbox";
+checkbox.onclick = function () {
+    if (checkbox.checked) {
+        label.style.textDecoration = "line-through"
+    }
+    else if(!checkbox.checked){
+        label.style.textDecoration = "none";
+    }
+}
+
+
+let label = document.createElement(`label`);
+label.textContent = input;
+label.style.fontSize = "larger";
+
+
+const deleteBtn = document.createElement("button");
+deleteBtn.textContent = "Delete";
+deleteBtn.className = "btn";
+deleteBtn.style.marginLeft = "10px"
+deleteBtn.onclick = function () {
+    div.remove();
+}
+
+const editBtn = document.createElement('button');
+editBtn.textContent = "Edit";
+editBtn.className = "btn";
+editBtn.style.marginLeft = "10px"
+editBtn.onclick = function (){
+    let newInput = document.createElement("input");
+    newInput.type = "text";
+    newInput.value=label.textContent;
+    div.replaceChild(label, newInput);
+
+    newInput.addEventListener("keypress", (event)=>{
+        if (event.key === "Enter") {
+            label.textContent = newInput.value;
+            checkbox.value = newInput.value
+            div.replaceChild(label,newInput); 
+        }
+    })
+}
+
+
+div.appendChild(checkbox)
+div.appendChild(label)
+div.appendChild(deleteBtn)
+div.appendChild(editBtn);
+
+headContainer.appendChild(div);
+}
+
+//bind element div
+
+//textContent for button value
+
+//event
+
+//class toggle
+//class list contain multiple class
+
+    </Script>
+    </html>

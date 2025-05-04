@@ -1,0 +1,128 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            @import url(`https://fonts.google.com/share?selection.family=Shadows+Into+Light`);
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    padding-top: 100px;
+    background-color: #ccd5ae;
+}
+#container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    text-align: center;
+    border: 2px solid black; 
+    height: auto; 
+    max-width: 600px;
+    padding: 60px;
+    overflow: auto;
+    overflow-x: hidden;
+    background-color: #e9edc9;
+    box-shadow: 0px 0px 15px 2px black;
+}
+#input-container{
+    display: flex;
+    gap: 10px;
+    margin-bottom:20px;
+}
+h1{
+    margin-bottom: 30px;
+}
+#data {
+overflow-y: auto;
+max-height: 300px;
+min-height: 100px; 
+}
+p{
+    margin-bottom: 16px;
+    font-family: 'Shadows Into Light', 'Times New Roman', Times, serif;
+}
+input{
+    height: 30px;
+    width: 200px;
+}
+button{
+    padding: 5px;
+    height: 30px;
+    width: 70px;
+    cursor: pointer;
+}
+
+        </style>
+    </head>
+    <body> 
+
+        <div id="container">
+            <h1>Fetch Data</h1>
+            <div id="input-container">
+            <input type="number" id="input">
+            <button onclick="get()">submit</button>
+            
+        </div>
+        <div id="data"></div>
+        </div>
+
+        <script>
+            function get(){
+    let dataDiv = document.getElementById(`data`)
+    console.log(dataDiv)
+
+    let input = document.getElementById("input").value;
+    input = Number(input);
+    
+    if (input < 1 || isNaN(input)) {
+         alert("Enter a valid number greater then 1");
+         return;
+    }
+    dataDiv.innerHTML = "";
+    
+    
+
+     fetch(`https://jsonplaceholder.typicode.com/posts?_limit=${input}`)
+     .then(response => {
+         if (!response.ok) {
+            throw new Error("Error") 
+         }
+         return response.json();
+     })
+     .then(data => {//parsed json data
+         console.log(data)//here data is an array
+         data.forEach(ele => {
+             let h4 = document.createElement(`h4`)
+             let p = document.createElement(`p`)
+             let tempDiv = document.createElement(`div`)
+
+             h4.textContent = ele.title;
+             p.textContent = ele.body;
+             tempDiv.appendChild(h4)
+
+             tempDiv.appendChild(p)
+             console.log(tempDiv);
+
+             dataDiv.appendChild(tempDiv);
+         });
+     
+     })
+     .catch(error => {
+         console.log(error)
+         alert("Error");
+     })
+ 
+}
+ 
+     
+        </script>
+    </body>
+    </html>
